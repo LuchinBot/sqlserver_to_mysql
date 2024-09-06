@@ -2,13 +2,17 @@
 import express, { json } from 'express'
 import { corsMiddleware } from './middlewares/cors.js'
 
+// Routes
 import {testRouter} from './routes/test.js'
+import {test2Router} from './routes/test2.js'
+
 const app = express()
 app.use(json())
 app.use(corsMiddleware())
 app.disable('x-powered-by')
 
 app.use('/test', testRouter)
+app.use('/test2', test2Router)
 
 app.use((err, req, res, next) => {
   console.error(err.stack)
