@@ -1,9 +1,11 @@
-import { connectSQLServer } from '../../sqlserver.js'
+import { sqlserver } from '../../sqlserver.js'
 export class test2Model {
     static async getAll() {
-        // Hacer una consulta SQL server a la base de datos
-        const [tests] = await connectSQLServer.query`SELECT * FROM SIG_PATRIMONIO`
-        return tests
+        var request = new sqlserver.Request();
+        request.query('SELECT * FROM SIG_PATRIMONIO', function (err, result) {
+            console.log(result.recordset);
+        });
     }
+
 }
 
