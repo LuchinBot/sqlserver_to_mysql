@@ -3,9 +3,9 @@ import express, { json } from 'express'
 import { corsMiddleware } from './middlewares/cors.js'
 
 // Routes
-import {testRouter} from './routes/test.js'
-import {test2Router} from './routes/test2.js'
-import {crontabRouter} from './routes/crontab.js'
+import { testRouter } from './routes/test.js'
+import { test2Router } from './routes/test2.js'
+import { crontabRouter } from './routes/crontab.js'
 
 const app = express()
 app.use(json())
