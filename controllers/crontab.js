@@ -22,7 +22,6 @@ export class CrontabController {
       }
 
       res.json({ message: 'Crontab actualizado correctamente' })
-      res.redirect('http://10.31.1.7/drasuite/')
     } catch (error) {
       console.error('Error:', error)
       res.status(500).json({ error: 'Server Error' })
