@@ -12,8 +12,12 @@ app.use(json())
 app.use(corsMiddleware())
 app.disable('x-powered-by')
 
+app.get('/', (req, res) => {
+  res.send('Bienvenidos al servidor!')
+})
 app.use('/test', testRouter)
 app.use('/test2', test2Router)
+// get post put delete
 app.use('/crontab', crontabRouter)
 
 app.use((err, req, res, next) => {

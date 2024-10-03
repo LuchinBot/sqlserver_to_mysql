@@ -6,6 +6,7 @@ export class testModel {
   }
   // Funcion para insertar
   static async insert(table, records) {
+    // Crear la consulta SQL
     const sql = `INSERT INTO ${table} (${Object.keys(records[0]).join(
       ','
     )}) VALUES ?`
@@ -13,8 +14,8 @@ export class testModel {
     // Insertar los registros
     connection.query(sql, [values])
   }
-  // Funcion para vaciar la tabla
+
   static async truncate(table) {
-    await connection.query(`TRUNCATE TABLE ${table};`)
+    connection.query(`TRUNCATE TABLE ${table}`)
   }
 }
