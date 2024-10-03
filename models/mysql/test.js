@@ -4,7 +4,7 @@ export class testModel {
     const [tests] = await connection.query('SELECT * FROM SIG_PERSONAL;')
     return tests
   }
-  // Funcion para insertar registros
+  // Funcion para insertar
   static async insert(table, records) {
     const sql = `INSERT INTO ${table} (${Object.keys(records[0]).join(
       ','
@@ -13,7 +13,7 @@ export class testModel {
     // Insertar los registros
     connection.query(sql, [values])
   }
-  // Funcion para vaciar una tabla
+  // Funcion para vaciar la tabla
   static async truncate(table) {
     await connection.query(`TRUNCATE TABLE ${table};`)
   }
