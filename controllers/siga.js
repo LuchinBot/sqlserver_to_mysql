@@ -1,8 +1,8 @@
-import { testModel } from '../models/mysql/test.js'
-export class TestController {
+import { sigaModel } from '../models/sqlserver/siga.js'
+export class SigaController {
   static async getAll(req, res) {
     try {
-      const tests = await testModel.getAll()
+      const tests = await sigaModel.getAll()
       res.json(tests)
     } catch (error) {
       console.error('Error:', error)

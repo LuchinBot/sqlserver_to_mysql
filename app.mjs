@@ -3,8 +3,7 @@ import express, { json } from 'express'
 import { corsMiddleware } from './middlewares/cors.js'
 
 // Routes
-import { testRouter } from './routes/test.js'
-import { test2Router } from './routes/test2.js'
+import { sigaRouter } from './routes/siga.js'
 import { crontabRouter } from './routes/crontab.js'
 
 const app = express()
@@ -15,9 +14,7 @@ app.disable('x-powered-by')
 app.get('/', (req, res) => {
   res.send('Bienvenidos al servidor!')
 })
-app.use('/test', testRouter)
-app.use('/test2', test2Router)
-// get post put delete
+app.use('/siga', sigaRouter)
 app.use('/crontab', crontabRouter)
 
 app.use((err, req, res, next) => {
