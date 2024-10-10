@@ -15,7 +15,7 @@ crontabRouter.get('/marca', CrontabController.getMarca)
 crontabRouter.get('/grupo', CrontabController.getGrupo)
 crontabRouter.get('/clase', CrontabController.getClase)
 crontabRouter.get('/familia', CrontabController.getFamilia)
-crontabRouter.get('/patrimonio', CrontabController.getPatrimonio)
+crontabRouter.get('/asignar', CrontabController.getAsignar)
 
 // Get con parametros
 crontabRouter.get(
@@ -35,4 +35,4 @@ crontabRouter.get('/marca/:fecth/:limit', CrontabController.getMarca)
 crontabRouter.get('/grupo/:fecth/:limit', CrontabController.getGrupo)
 crontabRouter.get('/clase/:fecth/:limit', CrontabController.getClase)
 crontabRouter.get('/familia/:fecth/:limit', CrontabController.getFamilia)
-crontabRouter.get('/patrimonio/:fecth/:limit', CrontabController.getPatrimonio)
+crontabRouter.get('/asignar/:fecth/:limit/:dni', CrontabController.getAsignar)

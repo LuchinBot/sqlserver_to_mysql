@@ -4,7 +4,7 @@ export class empleadoModel {
     const [tests] = await connection.query('SELECT * FROM empleado;')
     return tests
   }
-  // consultar si existe el registro
+  // Funciones de Consultar
   static async wherePersonal(value) {
     const [tests] = await connection.query(
       'SELECT * FROM empleado WHERE codpersona_natural = ?',
@@ -19,6 +19,21 @@ export class empleadoModel {
     )
     return tests
   }
+  static async whereAsigDni(value) {
+    const [tests] = await connection.query(
+      'SELECT empleado.codempleado, persona_natural.numero_documento_identidad FROM empleado INNER JOIN persona_natural ON persona_natural.codpersona_natural = empleado.codpersona_natural WHERE persona_natural.numero_documento_identidad = ?',
+      [value]
+    )
+    return tests
+  }
+  static async whereAsig() {
+    const [tests] = await connection.query(
+      'SELECT empleado.codempleado, persona_natural.numero_documento_identidad FROM empleado INNER JOIN persona_natural ON persona_natural.codpersona_natural = empleado.codpersona_natural'
+    )
+    return tests
+  }
+
+  // Funciones de Insertar
 
   static async insert(descripcion, mostrar_en_web, updated_at) {
     const [rows] = await connection.query(

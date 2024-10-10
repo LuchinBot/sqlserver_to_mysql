@@ -8,6 +8,8 @@ import { personaNaturalModel } from '../models/mysql/persona_natural.js'
 import { ubicacionFisicaModel } from '../models/mysql/ubicacion_fisica.js'
 import { tipoPatrimonioModel } from '../models/mysql/tipo_patrimonio.js'
 import { sigaModel } from '../models/sqlserver/siga.js'
+import { catalogoModel } from '../models/mysql/catalogo.js'
+import _ from 'lodash'
 export class CrontabController {
   static async getAll(req, res) {
     res.send('Crontab')
@@ -288,7 +290,9 @@ export class CrontabController {
         )
         if (obj.length == 0) {
           var codgrupo_bien = null
-          var grupo = grupoModel.where(obj.tipo_bien + '_' + obj.grupo_bien)
+          var grupo = grupoModel.where(
+            record.tipo_bien + '_' + record.grupo_bien
+          )
           if (obj.length > 0) {
             codgrupo_bien = grupo[0].codgrupo_bien
           }
@@ -337,13 +341,148 @@ export class CrontabController {
     }
   }
 
-  static async getPatrimonio(req, res) {
+  static async getCatalogo(req, res) {
     try {
       const { fecth, limit } = req.params
-      const records = await sigaModel.getPatrimonio(fecth, limit)
-      await mysqlModel.insert('SIG_PATRIMONIO', records)
+      const records = await sigaModel.getCatalogo(fecth, limit)
+      var cont1 = 0
+      var cont2 = 0
+      for (const record of records) {
+        var obj = await catalogoModel.where(
+          record.TIPO_BIEN +
+            '_' +
+            record.GRUPO_BIEN +
+            '_' +
+            record.CLASE_BIEN +
+            '_' +
+            record.FAMILIA_BIEN +
+            '_' +
+            record.ITEM_BIEN
+        )
+        if (obj.length == 0) {
+          var codgrupo_bien = null
+          var grupo = grupoModel.where(
+            record.TIPO_BIEN + '_' + record.GRUPO_BIEN
+          )
+          if (grupo.length > 0) {
+            codgrupo_bien = grupo[0].codgrupo_bien
+          }
+          var codclase_bien = null
+          var clase = claseModel.where(
+            record.TIPO_BIEN + '_' + record.GRUPO_BIEN + '_' + record.CLASE_BIEN
+          )
+          if (clase.length > 0) {
+            codclase_bien = clase[0].codclase_bien
+          }
+          var codfamilia_bien = null
+          var familia = familiaModel.where(
+            record.TIPO_BIEN +
+              '_' +
+              record.GRUPO_BIEN +
+              '_' +
+              record.CLASE_BIEN +
+              '_' +
+              record.FAMILIA_BIEN
+          )
+          if (familia.length > 0) {
+            codfamilia_bien = familia[0].codfamilia_bien
+          }
+          var item_bien = record.ITEM_BIEN
+          var nombre = record.NOMBRE_ITEM
+          var codigo_siga =
+            record.TIPO_BIEN +
+            '_' +
+            record.GRUPO_BIEN +
+            '_' +
+            record.CLASE_BIEN +
+            '_' +
+            record.FAMILIA_BIEN +
+            '_' +
+            record.ITEM_BIEN
+          var created_at = record.FECHA_ALTA ?? null
+          var updated_at = record.FECHA_ACT
+          var deleted_at = null
+          if (record.estado == 'I') {
+            var deleted_at = record.FECHA_INACTIVACION ?? null
+          }
+          await catalogoModel.insert(
+            codgrupo_bien,
+            codclase_bien,
+            codfamilia_bien,
+            item_bien,
+            nombre,
+            codigo_siga,
+            created_at,
+            updated_at,
+            deleted_at
+          )
+          cont1 += 1
+        } else {
+          var updated_at = record.FECHA_ACT
+          var deleted_at = null
+          if (obj.ESTADO == 'I') {
+            deleted_at = record.FECHA_INACTIVACION ?? null
+          }
+          await catalogoModel.update(updated_at, deleted_at)
+          cont2 += 1
+        }
+      }
+      res.json({
+        message: 'Actualizado correctamente.',
+        insert: cont1,
+        update: cont2
+      })
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+  static async getAsignar(req, res) {
+    try {
+      const { fecth, limit, dni } = req.params
+      var empleados = []
+      var empleado = []
+      if (dni != '0') {
+        empleado = await empleadoModel.whereAsigDni(dni)
+      } else {
+        empleado = await empleadoModel.whereAsig()
+      }
+      for (const record of empleado) {
+        empleados.push(record)
+      }
+      // Consultar los patrimonios asignados
+      var sigaAsignados = await sigaModel.getPatrimonio(fecth, limit, empleados)
+      var objet = sigaAsignados.map((num)=> num.numero_documento_identidad)
+      var empleado_collect = []
+      // Recorrer los registros
+      var nro_doc_empleado
+       (let dni in sigaAsignados) {
+        var codgrupo_bien = null
+        var codclase_bien = null
+        var codfamilia_bien = null
+        var codmarca_bien = null
+        var codcatalogo_bien = null
+        var codempleado = null
+        var coddependencia = null
+        var codubicacion_fisica = null
+        var codtipo_patrimonio = null
+        var codestado_conservacion = null
+        nro_doc_empleado = dni
 
-      res.json({ message: 'Tabla [SIG_PATRIMONIO] actualizada correctamente.' })
+        empleado_collect = _.filter(empleado, function (item) {
+          return item.numero_documento_identidad === nro_doc_empleado
+        })
+        if (empleado_collect.length != 0) {
+          codempleado = empleado_collect[0].codempleado
+        }
+        if (codempleado != null) {
+          // Recorrer los bienes
+        }
+      }
+
+      res.json({
+        data: sigaAsignados,
+        empleado: nro_doc_empleado
+      })
     } catch (error) {
       console.error('Error:', error)
     }

@@ -1,4 +1,5 @@
 import { sqlserver } from '../../sqlserver.js'
+import _ from 'lodash'
 export class sigaModel {
   static async getAll(table) {
     var request = new sqlserver.Request()
@@ -101,20 +102,48 @@ export class sigaModel {
     result = await request.query(sql)
     return result.recordset
   }
-  static async getPatrimonio(fetch, limit) {
+  static async getCatalogo(fetch, limit) {
     var request = new sqlserver.Request()
+    var sql =
+      'SELECT * FROM CATALOGO_BIEN_SERV_ORIGINAL ORDER BY TIPO_BIEN, GRUPO_BIEN, CLASE_BIEN, FAMILIA_BIEN, ITEM_BIEN'
     var result
-    if (fetch == null && limit == null) {
-      result = await request.query('SELECT * FROM SIG_PATRIMONIO')
-    } else {
-      result = await request.query(
-        'SELECT * FROM SIG_PATRIMONIO ORDER BY SEC_EJEC, CODIGO_ACTIVO, TIPO_PATRIM, CLASE_PATRIM OFFSET ' +
-          fetch +
-          ' ROWS FETCH NEXT ' +
-          limit +
-          ' ROWS ONLY'
-      )
+    if (fetch != null && limit != null) {
+      sql =
+        sql + ' OFFSET ' + fetch + ' ROWS FETCH NEXT ' + limit + ' ROWS ONLY'
     }
+    result = await request.query(sql)
     return result.recordset
+  }
+  static async getPatrimonio(fetch, limit, empleados) {
+    const request = new sqlserver.Request()
+    let sql =
+      'SELECT SIG_PATRIMONIO.* , SIG_PERSONAL.docum_ident, SIG_CENTRO_COSTO.NOMBRE_DEPEND ' +
+      'FROM SIG_PATRIMONIO ' +
+      'INNER JOIN SIG_PERSONAL ON SIG_PERSONAL.EMPLEADO = SIG_PATRIMONIO.EMPLEADO_FINAL ' +
+      'INNER JOIN SIG_CENTRO_COSTO ON SIG_CENTRO_COSTO.ANO_EJE = SIG_PATRIMONIO.ANO_EJE ' +
+      'AND SIG_CENTRO_COSTO.CENTRO_COSTO = SIG_PATRIMONIO.CENTRO_COSTO ' +
+      'WHERE LEN(SIG_PERSONAL.docum_ident) = 8 ' +
+      "AND SIG_PERSONAL.estado != 'I' " +
+      'AND SIG_PATRIMONIO.NRO_MOV_BAJA IS NULL'
+
+    // Añadir empleados a la consulta
+    sql +=
+      ' AND SIG_PERSONAL.docum_ident IN (' +
+      empleados.map((emp) => emp.numero_documento_identidad).join(',') +
+      ')'
+
+    // Ordenamiento por defecto
+    sql +=
+      ' ORDER BY SIG_PATRIMONIO.SEC_EJEC, SIG_PATRIMONIO.TIPO_MODALIDAD, SIG_PATRIMONIO.SECUENCIA'
+
+    if (fetch != null && limit != null) {
+      sql += ` OFFSET ${fetch} ROWS FETCH NEXT ${limit} ROWS ONLY`
+    }
+
+    // Ejecutar la consulta
+    const result = await request.query(sql)
+    const rows = result.recordset
+    const groupedResults = _.groupBy(rows, 'docum_ident')
+    return groupedResults
   }
 }
