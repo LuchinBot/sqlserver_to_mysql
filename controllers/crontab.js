@@ -11,6 +11,7 @@ import { sigaModel } from '../models/sqlserver/siga.js'
 import { catalogoModel } from '../models/mysql/catalogo.js'
 import { asignacionesModel } from '../models/mysql/asignaciones.js'
 import { estadoBienModel } from '../models/mysql/estado_bien.js'
+import { truncateModel } from '../models/mysql/truncate.js'
 import _ from 'lodash'
 export class CrontabController {
   static async getAll(req, res) {
@@ -605,20 +606,10 @@ export class CrontabController {
   // Vaciar tablas
   static async truncateTables(req, res) {
     try {
-      const tables = [
-        'SIG_CENTRO_COSTO',
-        'SIG_UBICAC_FISICA',
-        'SIG_PERSONAL',
-        'SIG_TIPO_PATRIMONIO',
-        'MARCA',
-        'GRUPO_BIEN_SERV',
-        'CLASE_BIEN_SERV',
-        'FAMILIA_BIEN_SERV',
-        'SIG_PATRIMONIO'
-      ]
+      const tables = ['asignaciones_bien']
 
       for (const table of tables) {
-        await mysqlModel.truncate(table)
+        await truncateModel.void(table)
       }
 
       res.json({ message: 'Tablas vacias correctamente.' })
