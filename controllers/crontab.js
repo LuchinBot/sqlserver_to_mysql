@@ -9,6 +9,8 @@ import { ubicacionFisicaModel } from '../models/mysql/ubicacion_fisica.js'
 import { tipoPatrimonioModel } from '../models/mysql/tipo_patrimonio.js'
 import { sigaModel } from '../models/sqlserver/siga.js'
 import { catalogoModel } from '../models/mysql/catalogo.js'
+import { asignacionesModel } from '../models/mysql/asignaciones.js'
+import { estadoBienModel } from '../models/mysql/estado_bien.js'
 import _ from 'lodash'
 export class CrontabController {
   static async getAll(req, res) {
@@ -441,50 +443,162 @@ export class CrontabController {
       const { fecth, limit, dni } = req.params
       var empleados = []
       var empleado = []
+
+      // Obtener empleados
       if (dni != '0') {
         empleado = await empleadoModel.whereAsigDni(dni)
       } else {
         empleado = await empleadoModel.whereAsig()
       }
-      for (const record of empleado) {
-        empleados.push(record)
-      }
+
+      empleados.push(...empleado)
+
       // Consultar los patrimonios asignados
       var sigaAsignados = await sigaModel.getPatrimonio(fecth, limit, empleados)
-      var objet = sigaAsignados.map((num)=> num.numero_documento_identidad)
-      var empleado_collect = []
-      // Recorrer los registros
-      var nro_doc_empleado
-       (let dni in sigaAsignados) {
-        var codgrupo_bien = null
-        var codclase_bien = null
-        var codfamilia_bien = null
-        var codmarca_bien = null
-        var codcatalogo_bien = null
-        var codempleado = null
-        var coddependencia = null
-        var codubicacion_fisica = null
-        var codtipo_patrimonio = null
-        var codestado_conservacion = null
-        nro_doc_empleado = dni
+      var empleado_array_error = []
+      var contador = 0
 
-        empleado_collect = _.filter(empleado, function (item) {
-          return item.numero_documento_identidad === nro_doc_empleado
-        })
-        if (empleado_collect.length != 0) {
-          codempleado = empleado_collect[0].codempleado
-        }
-        if (codempleado != null) {
-          // Recorrer los bienes
+      for (const dni in sigaAsignados) {
+        if (sigaAsignados.hasOwnProperty(dni)) {
+          var codgrupo_bien = null
+          var codclase_bien = null
+          var codfamilia_bien = null
+          var codmarca_bien = null
+          var codcatalogo_bien = null
+          var codempleado = null
+          var coddependencia = null
+          var codubicacion_fisica = null
+          var codtipo_patrimonio = null
+          var codestado_conservacion = null
+          var nro_doc_empleado = dni
+
+          var empleado_collect = _.filter(empleado, {
+            numero_documento_identidad: nro_doc_empleado
+          })
+
+          if (empleado_collect.length != 0) {
+            codempleado = empleado_collect[0].codempleado
+          }
+
+          if (codempleado != null) {
+            for (const element of sigaAsignados[dni]) {
+              // Cambiado a for...of
+              // Defino variables
+              var search_grupo_bien = false
+              var search_clase_bien = false
+              var search_familia_bien = false
+              var search_catalogo_bien = false
+
+              // Consulto la marca del bien
+              var marca = await marcaModel.where(element.MARCA) // Usar await
+              if (marca.length > 0) {
+                codmarca_bien = marca[0].codmarca_bien
+              }
+
+              // Consulto el estado del bien
+              var estado = await estadoBienModel.where(
+                element.ESTADO_CONSERV_FIN
+              ) // Usar await
+              if (estado.length > 0) {
+                codestado_conservacion = estado[0].codestado_conservacion
+              }
+
+              // Consulto la dependencia
+              var dependencia = await dependenciaModel.where(
+                element.NOMBRE_DEPEND
+              ) // Usar await
+              if (dependencia.length > 0) {
+                coddependencia = dependencia[0].coddependencia
+              }
+
+              // Consulto la ubicación
+              var ubicacion = await ubicacionFisicaModel.where(
+                element.TIPO_UBICAC + '_' + element.COD_UBICAC
+              ) // Usar await
+              if (ubicacion.length > 0) {
+                codubicacion_fisica = ubicacion[0].codubicacion_fisica
+              }
+
+              // Consulto el tipo de patrimonio
+              var tipo_patrimonio = await tipoPatrimonioModel.where(
+                element.TIPO_PATRIM + '_' + element.CLASE_PATRIM
+              ) // Usar await
+              if (tipo_patrimonio.length > 0) {
+                codtipo_patrimonio = tipo_patrimonio[0].codtipo_patrimonio
+              }
+
+              // Consultar asignaciones del bien
+              console.log(element.CODIGO_ACTIVO)
+              var asig = await asignacionesModel.where(element.CODIGO_ACTIVO) // Usar await
+              if (asig.length <= 0) {
+                // Lógica para insertar si no existe
+                var anio_asignacion = element.ANO_EJE
+                var item_bien = element.ITEM_BIEN
+                var codigo_patrimonial = element.CODIGO_ACTIVO
+                var codigo_siga =
+                  element.SEC_EJEC +
+                  '_' +
+                  element.TIPO_MODALIDAD +
+                  '_' +
+                  element.SECUENCIA
+                var imagen_referencial = null
+                var created_at = element.FECHA_ACT ?? null
+
+                // Asignaciones
+                await asignacionesModel.upsert(
+                  anio_asignacion,
+                  item_bien,
+                  codigo_patrimonial,
+                  codigo_siga,
+                  imagen_referencial,
+                  created_at,
+                  element.OBSERVACIONES,
+                  element.CARACTERISTICAS,
+                  element.MEDIDAS,
+                  element.NRO_SERIE,
+                  codestado_conservacion,
+                  codtipo_patrimonio,
+                  codgrupo_bien,
+                  codclase_bien,
+                  codfamilia_bien,
+                  codcatalogo_bien,
+                  codmarca_bien,
+                  coddependencia,
+                  codubicacion_fisica,
+                  codempleado,
+                  element.DESCRIPCION,
+                  element.MODELO,
+                  element.MODELO,
+                  codmarca_bien,
+                  element.DESCRIPCION,
+                  null
+                )
+                contador++
+              } else {
+                // Lógica para manejar si ya existe
+                console.log(asig[0].codgrupo_bien)
+                // Aquí puedes agregar más lógica si es necesario
+              }
+            }
+          } else {
+            if (!empleado_array_error.includes(nro_doc_empleado)) {
+              empleado_array_error.push(nro_doc_empleado)
+            }
+          }
         }
       }
 
+      const msg = 'Se insertaron ' + contador + ' registros'
       res.json({
-        data: sigaAsignados,
-        empleado: nro_doc_empleado
+        Message: msg,
+        Exception: empleado_array_error
       })
     } catch (error) {
       console.error('Error:', error)
+      res.status(500).json({
+        Message: 'Error al procesar la solicitud',
+        Exception: error.message
+      })
     }
   }
 
