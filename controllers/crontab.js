@@ -36,7 +36,6 @@ export class CrontabController {
 
         // Insertamos y/o actulizamos el empleado responsable actual
         var dni = record.docum_ident
-        console.log(dni)
         var empleado = empleadoModel.whereIn(dni)
         if (empleado.length > 0) {
           var codempleado_responsable = empleado[0].codempleado
@@ -49,8 +48,9 @@ export class CrontabController {
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        cont: cont1 + ' - ' + cont2
+        message: 'Ejecutado correctamente.',
+        insert: 'Insertado [' + cont1 + '] correctamente.',
+        update: 'Actualizado [' + cont2 + '] correctamente.'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -81,8 +81,7 @@ export class CrontabController {
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        cont: cont
+        message: 'Insertado [' + cont + '] correctamente.'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -94,22 +93,27 @@ export class CrontabController {
       const { fecth, limit } = req.params
       const records = await sigaModel.getPersonal(fecth, limit)
       var cont = 0
+      let empleado_array_error = []
       for (const record of records) {
         var obj = await personaNaturalModel.wherePersonal(record.docum_ident)
-        if (obj.length > 0) {
+        if (obj !== null && Array.isArray(obj) && obj.length > 0) {
           var empleado = await empleadoModel.wherePersonal(
             obj[0].codpersona_natural
           )
-          if (empleado.length == 0) {
+          if (empleado == null) {
             var codpersona_natural = obj.codpersona_natural
             await empleadoModel.insertPersonal(codpersona_natural)
             cont += 1
           }
+        } else {
+          if (!empleado_array_error.includes(record.docum_ident)) {
+            empleado_array_error.push(record.docum_ident)
+          }
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        cont: cont
+        message: 'Actualizado [' + cont + '] correctamente.',
+        exception: empleado_array_error
       })
     } catch (error) {
       console.error('Error:', error)
@@ -144,8 +148,7 @@ export class CrontabController {
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        cont: cont
+        message: 'Insertado [' + cont + '] correctamente.'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -160,10 +163,10 @@ export class CrontabController {
       var fechaActual = new Date()
       for (const record of records) {
         var obj = await marcaModel.where(record.MARCA)
-        if (obj.length == 0) {
-          var descripcion = record.descripcion
-          var codigo_siga = record.tipo_patrim + '_' + record.clase_patrim
-          var created_at = record.fecha_reg ?? fechaActual
+        if (obj == null || obj.length == 0) {
+          var descripcion = record.NOMBRE
+          var codigo_siga = record.MARCA
+          var created_at = record.FECHA_ALTA ?? null
           var deleted_at = null
           if (record.ESTADO == 'I') {
             var deleted_at = record.FECHA_BAJA ?? fechaActual
@@ -178,8 +181,7 @@ export class CrontabController {
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        cont: cont
+        message: 'Insertado [' + cont + '] correctamente.'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -196,7 +198,7 @@ export class CrontabController {
         var obj = await grupoModel.where(
           record.tipo_bien + '_' + record.grupo_bien
         )
-        if (obj.length == 0) {
+        if (obj == null || obj.length == 0) {
           var descripcion = record.nombre_grupo
           var concepto = record.alcance_grupo
           var codigo_siga = record.tipo_bien + '_' + record.grupo_bien
@@ -218,8 +220,7 @@ export class CrontabController {
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        cont: cont
+        message: 'Insertado [' + cont + '] correctamente.'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -236,7 +237,7 @@ export class CrontabController {
         var obj = await claseModel.where(
           record.tipo_bien + '_' + record.grupo_bien + '_' + record.clase_bien
         )
-        if (obj.length == 0) {
+        if (obj == null || obj.length == 0) {
           var codgrupo_bien = null
           var grupo = await grupoModel.where(
             record.tipo_bien + '_' + record.grupo_bien
@@ -267,8 +268,7 @@ export class CrontabController {
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        cont: cont
+        message: 'Insertado [' + cont + '] correctamente.'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -291,19 +291,19 @@ export class CrontabController {
             '_' +
             record.familia_bien
         )
-        if (obj.length == 0) {
+        if (obj == null || obj.length == 0) {
           var codgrupo_bien = null
           var grupo = grupoModel.where(
             record.tipo_bien + '_' + record.grupo_bien
           )
-          if (obj.length > 0) {
+          if (grupo.length > 0) {
             codgrupo_bien = grupo[0].codgrupo_bien
           }
           var codclase_bien = null
           var clase = claseModel.where(
             record.tipo_bien + '_' + record.grupo_bien + '_' + record.clase_bien
           )
-          if (obj.length > 0) {
+          if (clase.length > 0) {
             codclase_bien = clase[0].codclase_bien
           }
           var descripcion = record.nombre_fam

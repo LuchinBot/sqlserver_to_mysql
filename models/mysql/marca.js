@@ -14,7 +14,7 @@ export class marcaModel {
 
   static async insert(descripcion, codigo_siga, updated_at, deleted_at) {
     const [rows] = await connection.query(
-      'INSERT INTO marca_bien (descripcion, codigo_siga,updated_at_deleted_at) VALUES (?, ?, ?,?)',
+      'INSERT INTO marca_bien (descripcion, codigo_siga,updated_at,deleted_at) VALUES (?, ?, ?,?)',
       [descripcion, codigo_siga, updated_at, deleted_at]
     )
   }
