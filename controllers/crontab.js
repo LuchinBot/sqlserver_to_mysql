@@ -362,7 +362,7 @@ export class CrontabController {
             '_' +
             record.ITEM_BIEN
         )
-        if (obj.length == 0) {
+        if (obj == null || obj.length == 0) {
           var codgrupo_bien = null
           var grupo = grupoModel.where(
             record.TIPO_BIEN + '_' + record.GRUPO_BIEN
@@ -431,9 +431,8 @@ export class CrontabController {
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        insert: cont1,
-        update: cont2
+        insert: 'Insertado [' + cont1 + '] correctamente.',
+        update: 'Actualizado [' + cont2 + '] correctamente.'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -483,7 +482,6 @@ export class CrontabController {
 
           if (codempleado != null) {
             for (const element of sigaAsignados[dni]) {
-              // Cambiado a for...of
               // Defino variables
               var search_grupo_bien = false
               var search_clase_bien = false
@@ -515,7 +513,7 @@ export class CrontabController {
               // Consulto la ubicación
               var ubicacion = await ubicacionFisicaModel.where(
                 element.TIPO_UBICAC + '_' + element.COD_UBICAC
-              ) // Usar await
+              )
               if (ubicacion.length > 0) {
                 codubicacion_fisica = ubicacion[0].codubicacion_fisica
               }
@@ -523,16 +521,15 @@ export class CrontabController {
               // Consulto el tipo de patrimonio
               var tipo_patrimonio = await tipoPatrimonioModel.where(
                 element.TIPO_PATRIM + '_' + element.CLASE_PATRIM
-              ) // Usar await
+              )
               if (tipo_patrimonio.length > 0) {
                 codtipo_patrimonio = tipo_patrimonio[0].codtipo_patrimonio
               }
 
               // Consultar asignaciones del bien
-              console.log(element.CODIGO_ACTIVO)
               var asig = await asignacionesModel.where(element.CODIGO_ACTIVO) // Usar await
               if (asig.length <= 0) {
-                // Lógica para insertar si no existe
+                // Insertar si no existe
                 var anio_asignacion = element.ANO_EJE
                 var item_bien = element.ITEM_BIEN
                 var codigo_patrimonial = element.CODIGO_ACTIVO
@@ -575,10 +572,6 @@ export class CrontabController {
                   null
                 )
                 contador++
-              } else {
-                // Lógica para manejar si ya existe
-                console.log(asig[0].codgrupo_bien)
-                // Aquí puedes agregar más lógica si es necesario
               }
             }
           } else {
@@ -589,9 +582,8 @@ export class CrontabController {
         }
       }
 
-      const msg = 'Se insertaron ' + contador + ' registros'
       res.json({
-        Message: msg,
+        message: 'Se actualizaron ' + contador + ' registros',
         Exception: empleado_array_error
       })
     } catch (error) {
@@ -606,7 +598,17 @@ export class CrontabController {
   // Vaciar tablas
   static async truncateTables(req, res) {
     try {
-      const tables = ['asignaciones_bien']
+      const tables = [
+        'dependencias',
+        'ubicacion_fisica',
+        'empleado',
+        'tipo_patrimonio',
+        'grupo_bien',
+        'clase_bien',
+        'familia_bien',
+        'catalogo_bien',
+        'asignaciones_bien'
+      ]
 
       for (const table of tables) {
         await truncateModel.void(table)
