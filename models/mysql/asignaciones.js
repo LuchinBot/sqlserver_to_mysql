@@ -106,7 +106,6 @@ export class asignacionesModel {
           codigo_patrimonial // Para la condición de actualización
         ]
       )
-      console.log('Registro actualizado correctamente')
     } else {
       // Si no existe, inserta un nuevo registro
       await connection.query(
@@ -140,7 +139,6 @@ export class asignacionesModel {
           deleted_at
         ]
       )
-      console.log('Registro insertado correctamente')
     }
   }
 }
