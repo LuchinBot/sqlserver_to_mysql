@@ -12,12 +12,13 @@ app.use(json())
 app.use(corsMiddleware())
 app.disable('x-powered-by')
 
+/*
 app.get('/', (req, res) => {
   res.send('Documentación: http://localhost:3000/docs')
   // Mostrar el link de la documentacion
-})
+})*/
 app.use('/siga', sigaRouter)
-app.use('/crontab', crontabRouter)
+app.use('/', crontabRouter)
 
 app.use((err, req, res, next) => {
   console.error(err.stack)

@@ -10,6 +10,8 @@ export const crontabRouter = Router()
  * /truncate:
  *   get:
  *     summary: Truncar tablas
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Tablas truncadas
@@ -21,6 +23,8 @@ crontabRouter.get('/truncate', CrontabController.truncateTables)
  * /centrocosto:
  *   get:
  *     summary: Obtener centro de costo
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de centros de costo
@@ -32,6 +36,8 @@ crontabRouter.get('/centrocosto', CrontabController.getCentroCosto)
  * /centrocosto/{fecth}/{limit}:
  *   get:
  *     summary: Obtener centro de costo con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -59,6 +65,8 @@ crontabRouter.get(
  * /ubicacionfisica:
  *   get:
  *     summary: Obtener ubicación física
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de ubicaciones físicas
@@ -70,6 +78,8 @@ crontabRouter.get('/ubicacionfisica', CrontabController.getUbicacionFisica)
  * /ubicacionfisica/{fecth}/{limit}:
  *   get:
  *     summary: Obtener ubicación física con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -97,6 +107,8 @@ crontabRouter.get(
  * /personal:
  *   get:
  *     summary: Obtener personal
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de personal
@@ -108,6 +120,8 @@ crontabRouter.get('/personal', CrontabController.getPersonal)
  * /personal/{fecth}/{limit}:
  *   get:
  *     summary: Obtener personal con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -132,6 +146,8 @@ crontabRouter.get('/personal/:fecth/:limit', CrontabController.getPersonal)
  * /tipopatrimonio:
  *   get:
  *     summary: Obtener tipo de patrimonio
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de tipos de patrimonio
@@ -143,6 +159,8 @@ crontabRouter.get('/tipopatrimonio', CrontabController.getTipoPatrimonio)
  * /tipopatrimonio/{fecth}/{limit}:
  *   get:
  *     summary: Obtener tipo de patrimonio con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -170,6 +188,8 @@ crontabRouter.get(
  * /marca:
  *   get:
  *     summary: Obtener marcas
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de marcas
@@ -181,6 +201,8 @@ crontabRouter.get('/marca', CrontabController.getMarca)
  * /marca/{fecth}/{limit}:
  *   get:
  *     summary: Obtener marcas con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -205,6 +227,8 @@ crontabRouter.get('/marca/:fecth/:limit', CrontabController.getMarca)
  * /grupo:
  *   get:
  *     summary: Obtener grupos
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de grupos
@@ -216,6 +240,8 @@ crontabRouter.get('/grupo', CrontabController.getGrupo)
  * /grupo/{fecth}/{limit}:
  *   get:
  *     summary: Obtener grupos con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -240,6 +266,8 @@ crontabRouter.get('/grupo/:fecth/:limit', CrontabController.getGrupo)
  * /clase:
  *   get:
  *     summary: Obtener clases
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de clases
@@ -251,6 +279,8 @@ crontabRouter.get('/clase', CrontabController.getClase)
  * /clase/{fecth}/{limit}:
  *   get:
  *     summary: Obtener clases con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -275,6 +305,8 @@ crontabRouter.get('/clase/:fecth/:limit', CrontabController.getClase)
  * /familia:
  *   get:
  *     summary: Obtener familias
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de familias
@@ -286,6 +318,8 @@ crontabRouter.get('/familia', CrontabController.getFamilia)
  * /familia/{fecth}/{limit}:
  *   get:
  *     summary: Obtener familias con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -310,6 +344,8 @@ crontabRouter.get('/familia/:fecth/:limit', CrontabController.getFamilia)
  * /catalogo:
  *   get:
  *     summary: Obtener catálogo
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de elementos del catálogo
@@ -321,6 +357,8 @@ crontabRouter.get('/catalogo', CrontabController.getCatalogo)
  * /catalogo/{fecth}/{limit}:
  *   get:
  *     summary: Obtener catálogo con paginación
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
@@ -345,6 +383,8 @@ crontabRouter.get('/catalogo/:fecth/:limit', CrontabController.getCatalogo)
  * /asignar:
  *   get:
  *     summary: Obtener asignaciones
+ *     tags:
+ *        - Crontab
  *     responses:
  *       200:
  *         description: Lista de asignaciones
@@ -356,6 +396,8 @@ crontabRouter.get('/asignar', CrontabController.getAsignar)
  * /asignar/{fecth}/{limit}/{dni}:
  *   get:
  *     summary: Obtener asignaciones con paginación y filtro por DNI
+ *     tags:
+ *        - Crontab
  *     parameters:
  *       - in: path
  *         name: fecth
