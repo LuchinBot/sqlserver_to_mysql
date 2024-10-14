@@ -336,8 +336,7 @@ export class CrontabController {
         }
       }
       res.json({
-        message: 'Actualizado correctamente.',
-        cont: cont
+        message: 'Actualizado [' + cont + '] correctamente.'
       })
     } catch (error) {
       console.error('Error:', error)
