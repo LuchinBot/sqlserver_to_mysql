@@ -16,7 +16,7 @@ export const crontabRouter = Router()
  *       200:
  *         description: Tablas truncadas
  */
-crontabRouter.get('/truncate', CrontabController.truncateTables)
+//crontabRouter.get('/truncate', CrontabController.truncateTables)
 
 /**
  * @swagger

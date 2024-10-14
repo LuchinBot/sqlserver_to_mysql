@@ -595,7 +595,7 @@ export class CrontabController {
   }
 
   // Vaciar tablas
-  static async truncateTables(req, res) {
+  /*static async truncateTables(req, res) {
     try {
       const tables = [
         'dependencia',
@@ -618,5 +618,5 @@ export class CrontabController {
       console.error('Error:', error)
       res.status(500).json({ error: 'Server Error' })
     }
-  }
+  }*/
 }
