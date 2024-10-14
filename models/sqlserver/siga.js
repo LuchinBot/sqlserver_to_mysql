@@ -136,7 +136,7 @@ export class sigaModel {
     sql +=
       ' ORDER BY SIG_PATRIMONIO.SEC_EJEC, SIG_PATRIMONIO.TIPO_MODALIDAD, SIG_PATRIMONIO.SECUENCIA'
 
-    if (fetch != null && limit != null) {
+    if (fetch != null && fetch != '0' && limit != null && limit != '0') {
       sql += ` OFFSET ${fetch} ROWS FETCH NEXT ${limit} ROWS ONLY`
     }
 

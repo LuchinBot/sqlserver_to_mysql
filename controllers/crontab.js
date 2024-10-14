@@ -100,11 +100,12 @@ export class CrontabController {
           var empleado = await empleadoModel.wherePersonal(
             obj[0].codpersona_natural
           )
-          if (empleado == null) {
-            var codpersona_natural = obj.codpersona_natural
+          if (empleado == null || empleado.length == 0) {
+            var codpersona_natural = obj[0].codpersona_natural
             await empleadoModel.insertPersonal(codpersona_natural)
             cont += 1
           }
+          console.log(empleado)
         } else {
           if (!empleado_array_error.includes(record.docum_ident)) {
             empleado_array_error.push(record.docum_ident)
@@ -443,17 +444,16 @@ export class CrontabController {
       var empleados = []
       var empleado = []
 
-      // Obtener empleados
-      if (dni != '0') {
+      if (dni != '0' && dni != null) {
         empleado = await empleadoModel.whereAsigDni(dni)
       } else {
         empleado = await empleadoModel.whereAsig()
       }
 
       empleados.push(...empleado)
-
       // Consultar los patrimonios asignados
       var sigaAsignados = await sigaModel.getPatrimonio(fecth, limit, empleados)
+
       var empleado_array_error = []
       var contador = 0
 
@@ -583,7 +583,7 @@ export class CrontabController {
 
       res.json({
         message: 'Se actualizaron ' + contador + ' registros',
-        Exception: empleado_array_error
+        exception: empleado_array_error
       })
     } catch (error) {
       console.error('Error:', error)
@@ -598,7 +598,7 @@ export class CrontabController {
   static async truncateTables(req, res) {
     try {
       const tables = [
-        'dependencias',
+        'dependencia',
         'ubicacion_fisica',
         'empleado',
         'tipo_patrimonio',
