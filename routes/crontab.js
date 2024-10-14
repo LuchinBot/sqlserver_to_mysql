@@ -5,17 +5,6 @@ import { CrontabController } from '../controllers/crontab.js'
 // Routes
 export const crontabRouter = Router()
 
-/**
- * @swagger
- * /truncate:
- *   get:
- *     summary: Truncar tablas
- *     tags:
- *        - Crontab
- *     responses:
- *       200:
- *         description: Tablas truncadas
- */
 //crontabRouter.get('/truncate', CrontabController.truncateTables)
 
 /**
