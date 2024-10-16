@@ -54,7 +54,6 @@ export class asignacionesModel {
                 anio_asignacion = ?, 
                 item_bien = ?, 
                 codigo_siga = ?, 
-                imagen_referencial = ?, 
                 created_at = ?, 
                 observaciones = ?, 
                 caracteristicas = ?, 
