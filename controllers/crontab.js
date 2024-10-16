@@ -455,7 +455,8 @@ export class CrontabController {
       var sigaAsignados = await sigaModel.getPatrimonio(fecth, limit, empleados)
 
       var empleado_array_error = []
-      var contador = 0
+      var contador1 = 0
+      var contador2 = 0
 
       for (const dni in sigaAsignados) {
         if (sigaAsignados.hasOwnProperty(dni)) {
@@ -498,7 +499,7 @@ export class CrontabController {
                 element.ESTADO_CONSERV_FIN
               ) // Usar await
               if (estado.length > 0) {
-                codestado_conservacion = estado[0].codestado_conservacion
+                codestado_conservacion = estado[0].codestado_conservacion_bien
               }
 
               // Consulto la dependencia
@@ -525,53 +526,125 @@ export class CrontabController {
                 codtipo_patrimonio = tipo_patrimonio[0].codtipo_patrimonio
               }
 
+              var anio_asignacion = element.ANO_EJE
+              var item_bien = element.ITEM_BIEN
+              var codigo_patrimonial = element.CODIGO_ACTIVO
+              var codigo_siga =
+                element.SEC_EJEC +
+                '_' +
+                element.TIPO_MODALIDAD +
+                '_' +
+                element.SECUENCIA
+              var imagen_referencial = null
+              var created_at = element.FECHA_ACT ?? null
               // Consultar asignaciones del bien
               var asig = await asignacionesModel.where(element.CODIGO_ACTIVO) // Usar await
-              if (asig.length <= 0) {
-                // Insertar si no existe
-                var anio_asignacion = element.ANO_EJE
-                var item_bien = element.ITEM_BIEN
-                var codigo_patrimonial = element.CODIGO_ACTIVO
-                var codigo_siga =
-                  element.SEC_EJEC +
-                  '_' +
-                  element.TIPO_MODALIDAD +
-                  '_' +
-                  element.SECUENCIA
-                var imagen_referencial = null
-                var created_at = element.FECHA_ACT ?? null
+              if (asig == null || asig.length == 0) {
+                search_grupo_bien = true
+                search_clase_bien = true
+                search_familia_bien = true
+                search_catalogo_bien = true
 
-                // Asignaciones
-                await asignacionesModel.upsert(
-                  anio_asignacion,
-                  item_bien,
-                  codigo_patrimonial,
-                  codigo_siga,
-                  imagen_referencial,
-                  created_at,
-                  element.OBSERVACIONES,
-                  element.CARACTERISTICAS,
-                  element.MEDIDAS,
-                  element.NRO_SERIE,
-                  codestado_conservacion,
-                  codtipo_patrimonio,
-                  codgrupo_bien,
-                  codclase_bien,
-                  codfamilia_bien,
-                  codcatalogo_bien,
-                  codmarca_bien,
-                  coddependencia,
-                  codubicacion_fisica,
-                  codempleado,
-                  element.DESCRIPCION,
-                  element.MODELO,
-                  element.MODELO,
-                  codmarca_bien,
-                  element.DESCRIPCION,
-                  null
-                )
-                contador++
+                contador1++
+              } else {
+                contador2++
+                // ver si no existen datos
+                if (asig[0].codgrupo_bien || asig[0].codgrupo_bien == null) {
+                  search_grupo_bien = true
+                } else {
+                  codgrupo_bien = asig[0].codgrupo_bien
+                }
+
+                if (asig[0].codclase_bien || asig[0].codclase_bien == null) {
+                  search_clase_bien = true
+                } else {
+                  codclase_bien = asig[0].codclase_bien
+                }
+
+                if (
+                  asig[0].codfamilia_bien ||
+                  asig[0].codfamilia_bien == null
+                ) {
+                  search_familia_bien = true
+                } else {
+                  codfamilia_bien = asig[0].codfamilia_bien
+                }
+
+                if (
+                  asig[0].codcatalogo_bien ||
+                  asig[0].codcatalogo_bien == null
+                ) {
+                  search_catalogo_bien = true
+                } else {
+                  codcatalogo_bien = asig[0].codcatalogo_bien
+                }
               }
+
+              if (search_grupo_bien) {
+                var grupo = await grupoModel.where(
+                  element.TIPO_BIEN + '_' + element.GRUPO_BIEN
+                )
+                if (grupo.length > 0) {
+                  codgrupo_bien = grupo[0].codgrupo_bien
+                }
+              }
+
+              if (search_clase_bien) {
+                var clase = await claseModel.where(
+                  element.TIPO_BIEN +
+                    '_' +
+                    element.GRUPO_BIEN +
+                    '_' +
+                    element.CLASE_BIEN
+                )
+                if (clase.length > 0) {
+                  codclase_bien = clase[0].codclase_bien
+                }
+              }
+
+              if (search_familia_bien) {
+                var familia = await familiaModel.where(
+                  element.TIPO_BIEN +
+                    '_' +
+                    element.GRUPO_BIEN +
+                    '_' +
+                    element.CLASE_BIEN +
+                    '_' +
+                    element.FAMILIA_BIEN
+                )
+                if (familia.length > 0) {
+                  codfamilia_bien = familia[0].codfamilia_bien
+                }
+              }
+              // Actualizar o insertar
+              await asignacionesModel.upsert(
+                anio_asignacion,
+                item_bien,
+                codigo_patrimonial,
+                codigo_siga,
+                imagen_referencial,
+                created_at,
+                element.OBSERVACIONES,
+                element.CARACTERISTICAS,
+                element.MEDIDAS,
+                element.NRO_SERIE,
+                codestado_conservacion,
+                codtipo_patrimonio,
+                codgrupo_bien,
+                codclase_bien,
+                codfamilia_bien,
+                codcatalogo_bien,
+                codmarca_bien,
+                coddependencia,
+                codubicacion_fisica,
+                codempleado,
+                element.DESCRIPCION,
+                element.MODELO,
+                element.MODELO,
+                codmarca_bien,
+                element.DESCRIPCION,
+                null
+              )
             }
           } else {
             if (!empleado_array_error.includes(nro_doc_empleado)) {
@@ -582,8 +655,10 @@ export class CrontabController {
       }
 
       res.json({
-        message: 'Se actualizaron ' + contador + ' registros',
-        exception: empleado_array_error
+        Message: 'Procesado correctamente',
+        Insert: contador1,
+        Update: contador2,
+        Exception: empleado_array_error
       })
     } catch (error) {
       console.error('Error:', error)

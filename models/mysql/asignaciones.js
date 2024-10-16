@@ -7,7 +7,7 @@ export class asignacionesModel {
   // consultar si existe el registro
   static async where(value) {
     const [tests] = await connection.query(
-      'SELECT * FROM asignaciones_bien WHERE codigo_siga = ?',
+      'SELECT * FROM asignaciones_bien WHERE codigo_patrimonial = ?',
       [value]
     )
     return tests
@@ -80,7 +80,6 @@ export class asignacionesModel {
           anio_asignacion,
           item_bien,
           codigo_siga,
-          imagen_referencial,
           created_at,
           observaciones,
           caracteristicas,
