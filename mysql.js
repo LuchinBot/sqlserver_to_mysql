@@ -7,7 +7,7 @@ const config = {
   port: 3306,
   user: process.env.DBMS_USER,
   password: process.env.DBMS_PWD,
-  database: process.env.DBMS_NAME,
+  database: process.env.DBMS_NAME
 }
 
 const connection = await mysql.createConnection(config)

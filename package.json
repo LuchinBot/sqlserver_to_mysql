@@ -4,8 +4,8 @@
   "main": "app.mjs",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.mjs"
+    "start": "node app.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
@@ -15,7 +15,10 @@
     "dotenv": "^16.4.5",
     "drasuite": "file:",
     "express": "^4.19.2",
+    "lodash": "^4.17.21",
     "mssql": "^11.0.1",
-    "mysql2": "^3.11.0"
+    "mysql2": "^3.11.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }
